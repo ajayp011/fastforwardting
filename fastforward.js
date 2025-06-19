@@ -9,7 +9,14 @@
   });
   document.body.appendChild(btn);
 
+  let alreadyRunning = false;
+
   btn.addEventListener("click", () => {
+    if (alreadyRunning) {
+      alert("already fast-forwarding");
+      return;
+    }
+
     const iframe = document.querySelector("iframe");
     if (!iframe) {
       alert("go to a page with a video assignment first");
@@ -23,19 +30,21 @@
         return;
       }
 
+      alreadyRunning = true;
+
       const speedInterval = setInterval(() => {
+        if (video.currentTime >= video.duration - 10) {
+          clearInterval(speedInterval);
+          alert("video is done");
+          alreadyRunning = false;
+          return;
+        }
+
         video.playbackRate = 16;
         video.muted = true;
         video.play().catch(() => {});
         console.log("16x speed running...", video.currentTime.toFixed(2));
       }, 300);
-
-      video.addEventListener("ended", () => {
-        clearInterval(speedInterval);
-        alert("video is done");
-      });
-
-      alert("fast-forwarding started");
 
     } catch (e) {
       alert("could not access the video");
